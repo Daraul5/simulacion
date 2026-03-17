@@ -1,5 +1,5 @@
 import flet as ft
-from views.view_cuadrado_medio import VistaCuadradosMedios
+from views.view_producto_medio import VistaProductosMedios
 
 def main(page: ft.Page):
     page.title = "Prueba Unitaria - Interfaz"
@@ -7,8 +7,11 @@ def main(page: ft.Page):
     page.padding = 30
 
     # Instanciamos nuestra vista encapsulada y la agregamos a la página
-    vista = VistaCuadradosMedios()
+    vista = VistaProductosMedios()
     page.add(vista)
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    try:
+        ft.run(main)
+    except Exception:
+        pass # Ignora errores al cerrar la ventana

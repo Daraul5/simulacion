@@ -18,21 +18,12 @@ class Producto_medio:
         return int(centro), s_producto
 
     def validacion(self):
-        while True:
-            if self.semilla1 > 0 and self.longitud % 2 == 0:
-                if (
-                    self.semilla2 > 0
-                    and len(str(self.semilla2)) % 2 == 0
-                    and self.longitud == len(str(self.semilla2))
-                ):
-                    break
-                else:
-                    print("introduce una segunda semilla valida ")
-                    self.semilla2 = int(input("Ingresa la nueva semilla: "))
-            else:
-                print("Introduce una primera semilla valida ")
-                self.semilla1 = int(input("Ingresa la nueva semilla: "))
-                self.longitud = len(str(self.semilla1))
+        if (self.semilla1 and self.semilla2) < 0:
+            raise ValueError("las semillas deben de ser positivas")
+        if (self.longitud and len(str(self.semilla2))) %2 != 0:
+            raise ValueError("las semillas deben de ser de digitos pares")
+        if self.n < 0:
+            raise ValueError("el numero de iteraciones debe de ser positivo")
 
     def productosmedios(self):
         self.ri = []
@@ -55,18 +46,4 @@ class Producto_medio:
             if x_sig == 0:
                 break
             v1, v2 = v2, x_sig
-        return self.ri
-
-    def imprimir_tabla(self):
-        if not self.historial:
-            print("No hay datos generados. Llama primero a .generar()")
-            return
-        print(
-            f"\n{'i':<5} | {'Xi-1':<10} | {'Xi':<10} | {'Producto':<15} | {'Centro':<15} | {'Ri':<8}"
-        )
-        print("-" * 75)
-        for fila in self.historial:
-            print(
-                f"{fila['i']:<5} | {fila['v1']:<10} | {fila['v2']:<10} | "
-                f"{fila['producto']:<15} | {fila['x_sig']:<15} | {fila['ri']:.4f}"
-            )
+        return self.historial
