@@ -1,7 +1,7 @@
-from cuadradosmedios import Cuadrado_medio
-from productosmedios import Producto_medio
-from multplicadorconstante import Multiplicador_constante
-from metodolineal import Metodo_lineal
+from metodos.cuadradosmedios import Cuadrado_medio
+from metodos.productosmedios import Producto_medio
+from metodos.multplicadorconstante import Multiplicador_constante
+from metodos.metodolineal import Metodo_lineal
 from chicuadrada import Prueba_chi2
 from ks import KS_metodo
 
