@@ -12,16 +12,15 @@ class Metodo_lineal:
         self.historial = []
 
     def validacion(self):
-        while True:
-            if self.a > 0 and self.semilla > 0 and self.c > 0 and self.modulo > 0:
-                break
-            else:
-                print("introduce datos correctos")
-                self.a = int(input())
-                self.semilla = int(input())
-                self.c = int(input())
-                self.modulo = int(input())
-
+        if self.a < 0:
+            raise ValueError("el multiplicador debe de ser positivo")
+        if self.semilla < 0:
+            raise ValueError("la semilla debe de ser positiva")
+        if self.c < 0:
+            raise ValueError("el elemento aditivo debe de ser positivo")
+        if self.modulo < 0:
+            raise ValueError("el modulo debe de ser positivo") 
+        
     def metodolineal(self):
         self.ri = []
         self.historial = []
@@ -49,30 +48,5 @@ class Metodo_lineal:
             if x_sig == 0:
                 break
             v1 = x_sig
-
-    def imprimir_tabla(self):
-        if not self.historial:
-            print("No hay datos generados. Llama primero a .metodolineal()")
-            return
-
-        # Encabezados de la tabla
-        print(
-            f"\n{'i':<5} | {'Xi-1':<10} | {'(a*Xi-1 + c)':<15} | {'(a*Xi-1 + c) mod m':<20} | {'Ri':<8}"
-        )
-        print("-" * 70)
-
-        for fila in self.historial:
-            # Extraemos los datos del diccionario de historial
-            i = fila["i"]
-            xi_1 = fila["v1"]
-            normalizado = fila["normalizado"]
-            x_sig = fila["x_sig"]
-            ri = fila["ri"]
-
-            print(
-                f"{i:<5} | "
-                f"{xi_1:<10} | "
-                f"{normalizado:<15} | "
-                f"{x_sig:<20} | "
-                f"{ri:.4f}"
-            )
+        return self.historial
+    
