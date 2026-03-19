@@ -1,6 +1,6 @@
 import flet as ft
 from core.metodolineal import Metodo_lineal
-
+import math
 class VistaMetodoLineal(ft.Container):
     def __init__(self):
         super().__init__()
@@ -16,11 +16,13 @@ class VistaMetodoLineal(ft.Container):
         self.txt_semilla = ft.TextField(label="Semilla (X0)", width=200)
         self.txt_C = ft.TextField(label="Aditivo (c)", width=200)
         self.txt_modulo = ft.TextField(label="Modulo (m)", width=200)
-        self.txt_n = ft.TextField(label="Iteraciones (n)")
+        self.txt_n = ft.TextField(label="Iteraciones (n)", width=200)
         
         # NOTE: Event functions need an 'e' parameter
-        self.btn_generar = ft.ElevatedButton("Generar", on_click=self.procesar_datos)
-        self.lbl_error = ft.Text("", color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD)
+        self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
+        # En build_ui, cambia la línea del btn_clear por esto:
+        self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_tabla)
+        self.lbl_error = ft.Text(color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD)
 
         self.btn_prev = ft.IconButton(ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True)
         self.btn_next = ft.IconButton(ft.Icons.ARROW_FORWARD, on_click=self.pagina_siguiente, disabled=True)
@@ -38,11 +40,12 @@ class VistaMetodoLineal(ft.Container):
                 ft.DataColumn(label=ft.Text("ri")),
             ]
         )
+
         return ft.Column(
             controls=[
                 # Updated Title
                 ft.Text(value="Generador: Método Lineal Congruencial", size=32, weight=ft.FontWeight.BOLD),
-                ft.Row([self.txt_a, self.txt_semilla, self.txt_C, self.txt_modulo, self.txt_n, self.btn_generar]),
+                ft.Row([self.txt_a, self.txt_semilla, self.txt_C, self.txt_modulo, self.txt_n, self.btn_generar, self.btn_clear]),
                 self.lbl_error,
                 ft.Row([self.btn_prev, self.lbl_paginacion, self.btn_next], alignment=ft.MainAxisAlignment.CENTER),
                 ft.ListView(
@@ -54,6 +57,17 @@ class VistaMetodoLineal(ft.Container):
             ],
             expand=True
         )
+    
+    def limpiar_tabla(self, e):
+        self.tabla_datos.rows.clear()
+        self.datos_completos = []
+        self.lbl_paginacion.value = "Página 0 de 0"
+        self.txt_a.value = ""
+        self.txt_semilla.value = ""
+        self.txt_C.value = ""
+        self.txt_modulo.value = ""
+        self.txt_n.value = ""
+        self.update()
 
     def actualizar_tabla(self):
         self.tabla_datos.rows.clear()
@@ -61,17 +75,29 @@ class VistaMetodoLineal(ft.Container):
         fin = inicio + self.filas_por_pagina
         segmento = self.datos_completos[inicio:fin]
 
+        # Calculamos la cantidad de decimales basados en la longitud del string del módulo.
+        # Lo leemos directamente del TextField para asegurarnos.
+        try:
+            modulo_str = self.txt_modulo.value.strip()
+            num_decimales = len(modulo_str) if modulo_str else 4 # 4 por defecto si algo falla
+        except:
+            num_decimales = 4
+
         for fila in segmento:
+            # Aplicamos el formato dinámico al valor ri
+            ri_formateado = f"{float(fila['ri']):.{num_decimales}f}"
+
             self.tabla_datos.rows.append(
                 ft.DataRow(cells=[
                     ft.DataCell(ft.Text(str(fila["i"]))),
                     ft.DataCell(ft.Text(str(fila["a"]))),
-                    ft.DataCell(ft.Text(str(fila["vi"]))),
+                    ft.DataCell(ft.Text(str(fila["v1"]))),
                     ft.DataCell(ft.Text(str(fila["c"]))),
                     ft.DataCell(ft.Text(str(fila["modulo"]))),
                     ft.DataCell(ft.Text(str(fila["normalizado"]))),
                     ft.DataCell(ft.Text(str(fila["x_sig"]))),
-                    ft.DataCell(ft.Text(str(fila["ri"]))),
+                    # Usamos el string formateado aquí
+                    ft.DataCell(ft.Text(ri_formateado)), 
                 ])
             )
             
@@ -93,35 +119,92 @@ class VistaMetodoLineal(ft.Container):
             val_modulo = self.txt_modulo.value.strip()
             val_n = self.txt_n.value.strip()
 
-            # 1. Validaciones para el multiplicador
-            if not val_a or not val_a.isdigit() or int(val_a) <= 0:
-                raise ValueError("El multiplicador debe ser un número entero positivo.")
-            
-            # 2. Validaciones para Semilla
-            if not val_s or not val_s.isdigit() or int(val_s) <= 0:
-                raise ValueError("La semilla debe ser un número entero positivo.")
-            
-            # (Opcional) Removida la validación de dígitos pares, ya que no aplica al método lineal
-            
-            # 3. Validaciones para C y Modulo (Recomendado agregarlas)
-            if not val_c or not val_c.isdigit() or int(val_c) < 0:
-                 raise ValueError("El aditivo (c) debe ser un número entero positivo o cero.")
-            
-            if not val_modulo or not val_modulo.isdigit() or int(val_modulo) <= 0:
-                 raise ValueError("El módulo debe ser un número entero positivo.")
+            # --- 1. Validaciones para el Multiplicador (a) ---
+            if not val_a:
+                raise ValueError("El campo del multiplicador (a) no puede estar vacío.")
+            try:
+                val_a = int(val_a)
+            except ValueError:
+                raise ValueError("El multiplicador (a) debe ser un número entero (sin letras ni signos raros).")
+            if val_a <= 0:
+                raise ValueError("El multiplicador (a) no puede ser cero ni negativo.")
 
-            # 4. Validaciones para n (Iteraciones)
-            if not val_n or not val_n.isdigit() or int(val_n) <= 0:
-                raise ValueError("El número de iteraciones debe ser un entero mayor a 0.")
+            # --- 2. Validaciones para la Semilla (X0) ---
+            if not val_s:
+                raise ValueError("El campo de la semilla (X0) no puede estar vacío.")
+            try:
+                val_s = int(val_s)
+            except ValueError:
+                raise ValueError("La semilla (X0) debe ser un número entero válido.")
+            if val_s <= 0:
+                raise ValueError("La semilla (X0) no puede ser cero ni negativa.")
 
-            # 5. Ejecución de la lógica
-            # Asegúrate de pasar enteros si tu backend así lo requiere
+            # --- 3. Validaciones para el Aditivo (c) ---
+            if not val_c:
+                raise ValueError("El campo del aditivo (c) no puede estar vacío.")
+            try:
+                val_c = int(val_c)
+            except ValueError:
+                raise ValueError("El aditivo (c) debe ser un número entero.")
+            if val_c < 0:
+                raise ValueError("El aditivo (c) no puede ser negativo (puede ser 0 o mayor).")
+
+            # --- 4. Validaciones para el Módulo (m) ---
+            if not val_modulo:
+                raise ValueError("El campo del módulo (m) no puede estar vacío.")
+            try:
+                val_modulo = int(val_modulo)
+            except ValueError:
+                raise ValueError("El módulo (m) debe ser un número entero.")
+            if val_modulo <= 0:
+                raise ValueError("El módulo (m) no puede ser cero ni negativo.")
+
+            # --- 5. Validaciones para Iteraciones (n) ---
+            if not val_n:
+                raise ValueError("El campo de iteraciones (n) no puede estar vacío.")
+            try:
+                val_n = int(val_n)
+            except ValueError:
+                raise ValueError("Las iteraciones (n) deben ser un número entero.")
+            if val_n <= 0:
+                raise ValueError("Debes ingresar por lo menos 1 iteración.")
+                
+            # --- 6. AUTO-CORRECCIÓN Matemáticas del LCG (Hull-Dobell) ---
+            # Regla 1: El módulo (m) siempre debe ser mayor que a, X0 y c.
+            # Regla 2: Para máxima eficiencia, 'c' y 'm' deben ser PRIMOS RELATIVOS (su Máximo Común Divisor debe ser 1).
+            
+            valor_maximo = max(val_a, val_s, val_c)
+            necesita_ajuste = False
+            
+            # Verificamos si es muy pequeño O si NO son primos relativos
+            if val_modulo <= valor_maximo or math.gcd(val_c, val_modulo) != 1:
+                necesita_ajuste = True
+                
+                # Primero aseguramos que sea más grande que el máximo
+                val_modulo = max(val_modulo, valor_maximo + 1)
+                
+                # Luego, iteramos hasta encontrar el primer número que sea primo relativo de c
+                while math.gcd(val_c, val_modulo) != 1:
+                    val_modulo += 1
+
+            if necesita_ajuste:
+                # ¡Magia! Actualizamos el campo de texto en la interfaz
+                self.txt_modulo.value = str(val_modulo)
+                
+                # Le avisamos qué reglas aplicamos
+                self.lbl_error.value = f"Aviso: Módulo ajustado a {val_modulo} para cumplir tamaño y ser primo relativo de 'c'."
+                self.lbl_error.color = ft.Colors.ORANGE
+            else:
+                # Si todo está bien, limpiamos
+                self.lbl_error.value = ""
+                self.lbl_error.color = ft.Colors.ERROR
+            # 7. Ejecución de la lógica (¡Ya son enteros, no necesitas el int() aquí!)
             generador = Metodo_lineal(
-                a=int(val_a), 
-                semilla=int(val_s), 
-                c=int(val_c), 
-                modulo=int(val_modulo), 
-                n=int(val_n)
+                a=val_a, 
+                semilla=val_s, 
+                c=val_c, 
+                modulo=val_modulo, 
+                n=val_n
             )
             self.datos_completos = generador.metodolineal()
             

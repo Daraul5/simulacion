@@ -12,14 +12,22 @@ class Metodo_lineal:
         self.historial = []
 
     def validacion(self):
-        if self.a < 0:
-            raise ValueError("el multiplicador debe de ser positivo")
-        if self.semilla < 0:
-            raise ValueError("la semilla debe de ser positiva")
-        if self.c < 0:
-            raise ValueError("el elemento aditivo debe de ser positivo")
-        if self.modulo < 0:
-            raise ValueError("el modulo debe de ser positivo") 
+        # 1. Errores críticos que la matemática no puede perdonar
+        if self.modulo <= 0:
+            raise ValueError("El módulo (m) no puede ser cero ni negativo.")
+        if self.a < 0 or self.semilla < 0 or self.c < 0:
+            raise ValueError("Los parámetros a, semilla y c no pueden ser negativos.")
+
+        # 2. AUTO-CORRECCIÓN: Reglas del Generador Lineal
+        # El módulo siempre debe ser estrictamente mayor que a, X0 y c.
+        valor_maximo = max(self.a, self.semilla, self.c)
+        
+        if self.modulo <= valor_maximo:
+            # Ajustamos el módulo automáticamente para que sea válido
+            self.modulo = valor_maximo + 1
+            
+            # Actualizamos la longitud por si el nuevo módulo tiene más dígitos
+            self.longitud = len(str(self.modulo))
         
     def metodolineal(self):
         self.ri = []
