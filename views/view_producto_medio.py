@@ -76,7 +76,7 @@ class VistaProductosMedios(ft.Container):
 
     def procesar_datos(self, e):
         self.lbl_error.value = ""
-        # Es buena práctica limpiar la tabla visual inmediatamente al dar click
+        
         self.tabla_datos.rows.clear()
         self.update() 
         

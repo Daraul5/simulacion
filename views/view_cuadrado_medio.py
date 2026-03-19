@@ -31,6 +31,16 @@ class VistaCuadradosMedios(ft.Container):
             ],
             rows=[]
         )
+        return ft.Column(
+            controls=[
+                ft.Text("Generador: Cuadrados Medios", size=32, weight=ft.FontWeight.BOLD),
+                ft.Row([self.txt_semilla, self.txt_n, self.btn_generar]),
+                self.lbl_error,
+                ft.Row([self.btn_prev, self.lbl_paginacion, self.btn_next], alignment=ft.MainAxisAlignment.CENTER),
+                ft.ListView([self.tabla_datos], expand=True, padding=20)
+            ],
+            expand=True
+        )
 
     def actualizar_tabla(self):
         self.tabla_datos.rows.clear()
