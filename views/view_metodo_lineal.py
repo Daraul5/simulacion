@@ -21,7 +21,7 @@ class VistaMetodoLineal(ft.Container):
         # NOTE: Event functions need an 'e' parameter
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
         # En build_ui, cambia la línea del btn_clear por esto:
-        self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_tabla)
+        self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
         self.lbl_error = ft.Text(color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD)
 
         self.btn_prev = ft.IconButton(ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True)
@@ -58,7 +58,7 @@ class VistaMetodoLineal(ft.Container):
             expand=True
         )
     
-    def limpiar_tabla(self, e):
+    def limpiar_datos(self, e):
         self.tabla_datos.rows.clear()
         self.datos_completos = []
         self.lbl_paginacion.value = "Página 0 de 0"

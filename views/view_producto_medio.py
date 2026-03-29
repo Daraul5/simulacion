@@ -15,7 +15,8 @@ class VistaProductosMedios(ft.Container):
         self.txt_semilla1 = ft.TextField(label="Semilla 1", width=200)
         self.txt_semilla2 = ft.TextField(label="Semilla 2", width=200)
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=150)
-        self.btn_generar = ft.ElevatedButton("Generar", on_click=self.procesar_datos)
+        self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
+        self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
         self.lbl_error = ft.Text(color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD)
         
         self.btn_prev = ft.IconButton(ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True)
@@ -72,6 +73,14 @@ class VistaProductosMedios(ft.Container):
         self.lbl_paginacion.value = f"Página {self.pagina_actual + 1} de {total_pags}"
         self.btn_prev.disabled = self.pagina_actual <= 0
         self.btn_next.disabled = fin >= len(self.datos_completos)
+        self.update()
+        
+    def limpiar_datos(self, e):
+        self.tabla_datos.rows.clear()
+        self.datos_completos = []
+        self.lbl_paginacion.value = "Página 0 de 0"
+        self.btn_prev.disabled = True
+        self.btn_next.disabled = True
         self.update()
 
     def procesar_datos(self, e):
