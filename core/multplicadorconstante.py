@@ -8,10 +8,16 @@ class Multiplicador_constante:
     def validacion(self):
         if self.a < 0:
             raise ValueError("la constante multiplicativa debe ser positiva")
+        if not isinstance(self.a, int):
+            raise ValueError("la constante multiplicativa debe ser un numero entero")
         if self.semilla < 0:
             raise ValueError("la semilla debe ser positiva")
+        if not isinstance(self.semilla, int):
+            raise ValueError("la semilla debe ser un numero entero")
         if self.n < 0:
             raise ValueError("el numero de iteraciones debe ser positivo")
+        if not isinstance(self.n, int):
+            raise ValueError("el numero de iteraciones debe ser un numero entero")
         if self.longitud % 2 != 0:
             raise ValueError("la semilla debe tener un numero par de digitos")
 
@@ -23,7 +29,7 @@ class Multiplicador_constante:
         centro = prod_norm[inicio:fin]
         return prod_norm, int(centro)
     
-    def mmultiplicadorconstante(self):
+    def multiplicadorconstante(self):
         self.ri = []
         self.historial = []
         a = self.a
