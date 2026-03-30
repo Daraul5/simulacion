@@ -107,6 +107,7 @@ class VistaChiCuadrada(ft.Container):
 
         try:
             # 1. Validaciones iniciales
+            self.lista_ri = self.pagina.session.store.get("lista_ri_actual") or []
             if not self.lista_ri:
                 raise ValueError("No hay números generados en memoria para evaluar.")
 

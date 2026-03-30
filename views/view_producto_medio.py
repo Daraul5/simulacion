@@ -113,6 +113,9 @@ class VistaProductosMedios(ft.Container):
 
     def limpiar_datos(self, e):
         self.tabla_datos.rows.clear()
+        self.txt_semilla1.value = ""
+        self.txt_semilla2.value = ""
+        self.txt_n.value = ""
         self.datos_completos = []
         self.lbl_error.value = ""
         self.lbl_paginacion.value = "Página 0 de 0"
@@ -205,6 +208,6 @@ class VistaProductosMedios(ft.Container):
 
         # 4. Navegamos a la vista de confirmaciones (usa tu método de enrutamiento)
         # Si usas tu método personalizado:
-        await self.pagina.push_route("/validaciones")
+        await self.pagina.push_route("/confirmaciones")
         # O si usas el nativo de Flet:
         # self.page.go("/validaciones")

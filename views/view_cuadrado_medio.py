@@ -3,8 +3,9 @@ from core.metodos.cuadradosmedios import Cuadrado_medio
 
 
 class VistaCuadradosMedios(ft.Container):
-    def __init__(self):
+    def __init__(self, page: ft.Page):
         super().__init__()
+        self.pagina = page
         self.expand = True
         self.padding = 20
         self.datos_completos = []
@@ -21,6 +22,14 @@ class VistaCuadradosMedios(ft.Container):
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=150)
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
         self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
+
+        self.btn_validar = ft.Button(
+            "Evaluar Aleatoriedad",
+            icon=ft.Icons.FACT_CHECK,
+            on_click=self.ir_a_validaciones,
+            disabled=True,  # Se activará solo al generar datos
+        )
+
         self.lbl_error = ft.Text(
             color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD
         )
@@ -47,7 +56,13 @@ class VistaCuadradosMedios(ft.Container):
             controls=[
                 self.bar,
                 ft.Row(
-                    [self.txt_semilla, self.txt_n, self.btn_generar, self.btn_clear],
+                    [
+                        self.txt_semilla,
+                        self.txt_n,
+                        self.btn_generar,
+                        self.btn_clear,
+                        self.btn_validar,
+                    ],
                     spacing=10,
                 ),
                 self.lbl_error,
@@ -96,6 +111,7 @@ class VistaCuadradosMedios(ft.Container):
         self.datos_completos = []
         self.pagina_actual = 0
         self.tabla_datos.rows.clear()
+        self.btn_validar.disabled = True
         self.btn_prev.disabled = True
         self.btn_next.disabled = True
         self.lbl_paginacion.value = "Página 0 de 0"
@@ -140,6 +156,9 @@ class VistaCuadradosMedios(ft.Container):
             self.pagina_actual = 0
             self.actualizar_tabla()
 
+            self.btn_validar.disabled = False  # Activamos el botón de validación
+            self.update()
+
         except ValueError as ex:
             # Captura tanto tus raise manuales como los raise de la clase Cuadrado_medio
             self.lbl_error.value = str(ex)
@@ -155,3 +174,10 @@ class VistaCuadradosMedios(ft.Container):
     def pagina_anterior(self, e):
         self.pagina_actual -= 1
         self.actualizar_tabla()
+
+    async def ir_a_validaciones(self, e):
+
+        lista_ri = [float(fila["ri"]) for fila in self.datos_completos]
+        self.pagina.session.store.set("lista_ri_actual", lista_ri)
+        self.pagina.session.store.set("ruta_origen", "/cuadrados_medios")
+        await self.pagina.push_route("/validaciones")
