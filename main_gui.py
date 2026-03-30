@@ -3,7 +3,7 @@ from views.view_cuadrado_medio import VistaCuadradosMedios
 from views.view_producto_medio import VistaProductosMedios
 from views.view_metodo_lineal import VistaMetodoLineal
 from views.view_multiplicador_constante import VistaMultiplicadorConstante
-from views.main import VistaMenu # Ojo: Asegúrate de que tu archivo se llama main.py dentro de la carpeta views
+from views.main import VistaMenu 
 
 def main(page: ft.Page):
     page.title = "Mis Generadores"
