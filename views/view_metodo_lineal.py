@@ -1,6 +1,8 @@
 import flet as ft
 from core.metodos.metodolineal import Metodo_lineal
 import math
+
+
 class VistaMetodoLineal(ft.Container):
     def __init__(self):
         super().__init__()
@@ -12,29 +14,42 @@ class VistaMetodoLineal(ft.Container):
         self.content = self.build_ui()
 
     def build_ui(self):
-        self.bar = ft.AppBar(title=ft.Text("Generador de Números Aleatorios - Método Lineal"), center_title=True)
-        self.tittle = ft.Text("Generador de Números Aleatorios - Método Lineal", size=24, weight=ft.FontWeight.BOLD)
+        self.bar = ft.AppBar(
+            title=ft.Text("Generador de Números Aleatorios - Método Lineal"),
+            center_title=True,
+        )
+        self.tittle = ft.Text(
+            "Generador de Números Aleatorios - Método Lineal",
+            size=24,
+            weight=ft.FontWeight.BOLD,
+        )
         self.txt_a = ft.TextField(label="Multiplicador (a)", width=200)
         self.txt_semilla = ft.TextField(label="Semilla (X0)", width=200)
         self.txt_C = ft.TextField(label="Aditivo (c)", width=200)
         self.txt_modulo = ft.TextField(label="Modulo (m)", width=200)
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=200)
-        
+
         # NOTE: Event functions need an 'e' parameter
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
         # En build_ui, cambia la línea del btn_clear por esto:
         self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
-        self.lbl_error = ft.Text(color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD)
+        self.lbl_error = ft.Text(
+            color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD
+        )
 
-        self.btn_prev = ft.IconButton(ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True)
-        self.btn_next = ft.IconButton(ft.Icons.ARROW_FORWARD, on_click=self.pagina_siguiente, disabled=True)
+        self.btn_prev = ft.IconButton(
+            ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True
+        )
+        self.btn_next = ft.IconButton(
+            ft.Icons.ARROW_FORWARD, on_click=self.pagina_siguiente, disabled=True
+        )
         self.lbl_paginacion = ft.Text("Página 0 de 0")
 
         self.tabla_datos = ft.DataTable(
             columns=[
                 ft.DataColumn(label=ft.Text("i")),
                 ft.DataColumn(label=ft.Text("a")),
-                ft.DataColumn(label=ft.Text("v1")), # o X_i
+                ft.DataColumn(label=ft.Text("v1")),  # o X_i
                 ft.DataColumn(label=ft.Text("c")),
                 ft.DataColumn(label=ft.Text("modulo")),
                 ft.DataColumn(label=ft.Text("normalizado")),
@@ -48,19 +63,32 @@ class VistaMetodoLineal(ft.Container):
                 # Updated Title
                 self.bar,
                 ft.Row([self.tittle], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([self.txt_a, self.txt_semilla, self.txt_C, self.txt_modulo, self.txt_n, self.btn_generar, self.btn_clear]),
+                ft.Row(
+                    [
+                        self.txt_a,
+                        self.txt_semilla,
+                        self.txt_C,
+                        self.txt_modulo,
+                        self.txt_n,
+                        self.btn_generar,
+                        self.btn_clear,
+                    ]
+                ),
                 self.lbl_error,
-                ft.Row([self.btn_prev, self.lbl_paginacion, self.btn_next], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row(
+                    [self.btn_prev, self.lbl_paginacion, self.btn_next],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
                 ft.ListView(
                     controls=[self.tabla_datos],
                     expand=True,
                     spacing=10,
                     padding=20,
-                )
+                ),
             ],
-            expand=True
+            expand=True,
         )
-    
+
     def limpiar_datos(self, e):
         self.tabla_datos.rows.clear()
         self.datos_completos = []
@@ -82,7 +110,9 @@ class VistaMetodoLineal(ft.Container):
         # Lo leemos directamente del TextField para asegurarnos.
         try:
             modulo_str = self.txt_modulo.value.strip()
-            num_decimales = len(modulo_str) if modulo_str else 4 # 4 por defecto si algo falla
+            num_decimales = (
+                len(modulo_str) if modulo_str else 4
+            )  # 4 por defecto si algo falla
         except:
             num_decimales = 4
 
@@ -91,27 +121,33 @@ class VistaMetodoLineal(ft.Container):
             ri_formateado = f"{float(fila['ri']):.{num_decimales}f}"
 
             self.tabla_datos.rows.append(
-                ft.DataRow(cells=[
-                    ft.DataCell(ft.Text(str(fila["i"]))),
-                    ft.DataCell(ft.Text(str(fila["a"]))),
-                    ft.DataCell(ft.Text(str(fila["v1"]))),
-                    ft.DataCell(ft.Text(str(fila["c"]))),
-                    ft.DataCell(ft.Text(str(fila["modulo"]))),
-                    ft.DataCell(ft.Text(str(fila["normalizado"]))),
-                    ft.DataCell(ft.Text(str(fila["x_sig"]))),
-                    # Usamos el string formateado aquí
-                    ft.DataCell(ft.Text(ri_formateado)), 
-                ])
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(str(fila["i"]))),
+                        ft.DataCell(ft.Text(str(fila["a"]))),
+                        ft.DataCell(ft.Text(str(fila["v1"]))),
+                        ft.DataCell(ft.Text(str(fila["c"]))),
+                        ft.DataCell(ft.Text(str(fila["modulo"]))),
+                        ft.DataCell(ft.Text(str(fila["normalizado"]))),
+                        ft.DataCell(ft.Text(str(fila["x_sig"]))),
+                        # Usamos el string formateado aquí
+                        ft.DataCell(ft.Text(ri_formateado)),
+                    ]
+                )
             )
-            
-        total_pags = (len(self.datos_completos)-1)//self.filas_por_pagina + 1 if self.datos_completos else 0
+
+        total_pags = (
+            (len(self.datos_completos) - 1) // self.filas_por_pagina + 1
+            if self.datos_completos
+            else 0
+        )
         self.lbl_paginacion.value = f"Página {self.pagina_actual + 1} de {total_pags}"
         self.btn_prev.disabled = self.pagina_actual <= 0
         self.btn_next.disabled = fin >= len(self.datos_completos)
         self.update()
 
-    def procesar_datos(self, e): # Added 'e'
-        self.lbl_error.value = '' # Fixed assignment to .value
+    def procesar_datos(self, e):  # Added 'e'
+        self.lbl_error.value = ""  # Fixed assignment to .value
         self.datos_completos = []
         self.tabla_datos.rows.clear()
 
@@ -128,7 +164,9 @@ class VistaMetodoLineal(ft.Container):
             try:
                 val_a = int(val_a)
             except ValueError:
-                raise ValueError("El multiplicador (a) debe ser un número entero (sin letras ni signos raros).")
+                raise ValueError(
+                    "El multiplicador (a) debe ser un número entero (sin letras ni signos raros)."
+                )
             if val_a <= 0:
                 raise ValueError("El multiplicador (a) no puede ser cero ni negativo.")
 
@@ -150,7 +188,9 @@ class VistaMetodoLineal(ft.Container):
             except ValueError:
                 raise ValueError("El aditivo (c) debe ser un número entero.")
             if val_c < 0:
-                raise ValueError("El aditivo (c) no puede ser negativo (puede ser 0 o mayor).")
+                raise ValueError(
+                    "El aditivo (c) no puede ser negativo (puede ser 0 o mayor)."
+                )
 
             # --- 4. Validaciones para el Módulo (m) ---
             if not val_modulo:
@@ -171,21 +211,21 @@ class VistaMetodoLineal(ft.Container):
                 raise ValueError("Las iteraciones (n) deben ser un número entero.")
             if val_n <= 0:
                 raise ValueError("Debes ingresar por lo menos 1 iteración.")
-                
+
             # --- 6. AUTO-CORRECCIÓN Matemáticas del LCG (Hull-Dobell) ---
             # Regla 1: El módulo (m) siempre debe ser mayor que a, X0 y c.
             # Regla 2: Para máxima eficiencia, 'c' y 'm' deben ser PRIMOS RELATIVOS (su Máximo Común Divisor debe ser 1).
-            
+
             valor_maximo = max(val_a, val_s, val_c)
             necesita_ajuste = False
-            
+
             # Verificamos si es muy pequeño O si NO son primos relativos
             if val_modulo <= valor_maximo or math.gcd(val_c, val_modulo) != 1:
                 necesita_ajuste = True
-                
+
                 # Primero aseguramos que sea más grande que el máximo
                 val_modulo = max(val_modulo, valor_maximo + 1)
-                
+
                 # Luego, iteramos hasta encontrar el primer número que sea primo relativo de c
                 while math.gcd(val_c, val_modulo) != 1:
                     val_modulo += 1
@@ -193,7 +233,7 @@ class VistaMetodoLineal(ft.Container):
             if necesita_ajuste:
                 # ¡Magia! Actualizamos el campo de texto en la interfaz
                 self.txt_modulo.value = str(val_modulo)
-                
+
                 # Le avisamos qué reglas aplicamos
                 self.lbl_error.value = f"Aviso: Módulo ajustado a {val_modulo} para cumplir tamaño y ser primo relativo de 'c'."
                 self.lbl_error.color = ft.Colors.ORANGE
@@ -203,14 +243,10 @@ class VistaMetodoLineal(ft.Container):
                 self.lbl_error.color = ft.Colors.ERROR
             # 7. Ejecución de la lógica (¡Ya son enteros, no necesitas el int() aquí!)
             generador = Metodo_lineal(
-                a=val_a, 
-                semilla=val_s, 
-                c=val_c, 
-                modulo=val_modulo, 
-                n=val_n
+                a=val_a, semilla=val_s, c=val_c, modulo=val_modulo, n=val_n
             )
             self.datos_completos = generador.metodolineal()
-            
+
             # Reset de página y renderizado
             self.pagina_actual = 0
             self.actualizar_tabla()

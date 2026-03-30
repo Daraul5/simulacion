@@ -20,7 +20,7 @@ class Producto_medio:
     def validacion(self):
         if (self.semilla1 and self.semilla2) < 0:
             raise ValueError("las semillas deben de ser positivas")
-        if (self.longitud and len(str(self.semilla2))) %2 != 0:
+        if (self.longitud and len(str(self.semilla2))) % 2 != 0:
             raise ValueError("las semillas deben de ser de digitos pares")
         if self.n < 0:
             raise ValueError("el numero de iteraciones debe de ser positivo")

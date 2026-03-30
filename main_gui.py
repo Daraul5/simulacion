@@ -3,7 +3,8 @@ from views.view_cuadrado_medio import VistaCuadradosMedios
 from views.view_producto_medio import VistaProductosMedios
 from views.view_metodo_lineal import VistaMetodoLineal
 from views.view_multiplicador_constante import VistaMultiplicadorConstante
-from views.main import VistaMenu 
+from views.main import VistaMenu
+
 
 def main(page: ft.Page):
     page.title = "Mis Generadores"
@@ -11,15 +12,15 @@ def main(page: ft.Page):
     # Manejador de rutas
     def route_change(e=None):
         page.views.clear()
-        
+
         # 1. Instanciamos la clase ANTES de crear el ft.View
-        mi_vista_menu = VistaMenu(page) 
-        
+        mi_vista_menu = VistaMenu(page)
+
         # Siempre apilamos el menú principal abajo
         page.views.append(
             ft.View(
                 route="/",
-                controls=[mi_vista_menu] # 2. Pasamos la instancia a los controles
+                controls=[mi_vista_menu],  # 2. Pasamos la instancia a los controles
             )
         )
 
@@ -27,34 +28,24 @@ def main(page: ft.Page):
         if page.route == "/productos_medios":
             mi_vista_productos = VistaProductosMedios()
             page.views.append(
-                ft.View(
-                    route="/productos_medios",
-                    controls=[mi_vista_productos]
-                )
+                ft.View(route="/productos_medios", controls=[mi_vista_productos])
             )
         if page.route == "/cuadrados_medios":
             mi_vista_cuadrados = VistaCuadradosMedios()
             page.views.append(
-                ft.View(
-                    route="/cuadrados_medios",
-                    controls=[mi_vista_cuadrados]
-                )
+                ft.View(route="/cuadrados_medios", controls=[mi_vista_cuadrados])
             )
         if page.route == "/multiplicador_constante":
             mi_vista_multiplicador = VistaMultiplicadorConstante()
             page.views.append(
                 ft.View(
-                    route="/multiplicador_constante",
-                    controls=[mi_vista_multiplicador]
+                    route="/multiplicador_constante", controls=[mi_vista_multiplicador]
                 )
             )
         if page.route == "/algoritmo_lineal":
             mi_vista_lineal = VistaMetodoLineal()
             page.views.append(
-                ft.View(
-                    route="/algoritmo_lineal",
-                    controls=[mi_vista_lineal]
-                )
+                ft.View(route="/algoritmo_lineal", controls=[mi_vista_lineal])
             )
         page.update()
 
@@ -71,6 +62,7 @@ def main(page: ft.Page):
 
     # Pintar la primera pantalla directamente
     route_change()
+
 
 if __name__ == "__main__":
     ft.run(main)

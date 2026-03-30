@@ -26,14 +26,17 @@ class Cuadrado_medio:
         for i in range(1, self.n + 1):
             x_sig, s_cuad = self.centro(v1)
             valor_ri = x_sig / (10**self.longitud)
-            self.historial.append({
-                "i": i,
-                "v1": str(v1).zfill(self.longitud),
-                "cuadrado": s_cuad,
-                "x_sig": str(x_sig).zfill(self.longitud),
-                "ri": valor_ri,
-            })
+            self.historial.append(
+                {
+                    "i": i,
+                    "v1": str(v1).zfill(self.longitud),
+                    "cuadrado": s_cuad,
+                    "x_sig": str(x_sig).zfill(self.longitud),
+                    "ri": valor_ri,
+                }
+            )
             self.ri.append(valor_ri)
-            if x_sig == 0: break
+            if x_sig == 0:
+                break
             v1 = x_sig
-        return self.historial # IMPORTANTE: Devolver el historial para la tabla
+        return self.historial  # IMPORTANTE: Devolver el historial para la tabla

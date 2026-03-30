@@ -21,14 +21,14 @@ class Metodo_lineal:
         # 2. AUTO-CORRECCIÓN: Reglas del Generador Lineal
         # El módulo siempre debe ser estrictamente mayor que a, X0 y c.
         valor_maximo = max(self.a, self.semilla, self.c)
-        
+
         if self.modulo <= valor_maximo:
             # Ajustamos el módulo automáticamente para que sea válido
             self.modulo = valor_maximo + 1
-            
+
             # Actualizamos la longitud por si el nuevo módulo tiene más dígitos
             self.longitud = len(str(self.modulo))
-        
+
     def metodolineal(self):
         self.ri = []
         self.historial = []
@@ -57,4 +57,3 @@ class Metodo_lineal:
                 break
             v1 = x_sig
         return self.historial
-    

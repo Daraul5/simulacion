@@ -28,7 +28,7 @@ class Multiplicador_constante:
         fin = inicio + self.longitud
         centro = prod_norm[inicio:fin]
         return prod_norm, int(centro)
-    
+
     def multiplicadorconstante(self):
         self.ri = []
         self.historial = []

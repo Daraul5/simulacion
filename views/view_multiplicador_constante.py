@@ -1,6 +1,7 @@
 import flet as ft
 from core.metodos.multplicadorconstante import Multiplicador_constante
 
+
 class VistaMultiplicadorConstante(ft.Container):
     def __init__(self):
         super().__init__()
@@ -12,19 +13,30 @@ class VistaMultiplicadorConstante(ft.Container):
         self.content = self.build_ui()
 
     def build_ui(self):
-        self.bar = ft.AppBar(title=ft.Text("Generador de Números Aleatorios - Multiplicador Constante"), center_title=True)
-        self.tittle = ft.Text(value="Generador: Multiplicador Constante", size=32, weight=ft.FontWeight.BOLD)   
+        self.bar = ft.AppBar(
+            title=ft.Text("Generador de Números Aleatorios - Multiplicador Constante"),
+            center_title=True,
+        )
+        self.tittle = ft.Text(
+            value="Generador: Multiplicador Constante",
+            size=32,
+            weight=ft.FontWeight.BOLD,
+        )
 
         self.txt_a = ft.TextField(label="Multiplicador (a)", width=200)
         self.txt_semilla = ft.TextField(label="Semilla (X0)", width=200)
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=200)
-        
+
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
         self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
         self.lbl_error = ft.Text(color=ft.Colors.ERROR, weight=ft.FontWeight.BOLD)
 
-        self.btn_prev = ft.IconButton(ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True)
-        self.btn_next = ft.IconButton(ft.Icons.ARROW_FORWARD, on_click=self.pagina_siguiente, disabled=True)
+        self.btn_prev = ft.IconButton(
+            ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True
+        )
+        self.btn_next = ft.IconButton(
+            ft.Icons.ARROW_FORWARD, on_click=self.pagina_siguiente, disabled=True
+        )
         self.lbl_paginacion = ft.Text("Página 0 de 0")
 
         self.tabla_datos = ft.DataTable(
@@ -36,24 +48,36 @@ class VistaMultiplicadorConstante(ft.Container):
                 ft.DataColumn(label=ft.Text("Xn+1")),
                 ft.DataColumn(label=ft.Text("Ri")),
             ],
-            rows=[]
+            rows=[],
         )
 
         return ft.Column(
             controls=[
                 self.bar,
                 ft.Row([self.tittle], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([self.txt_a, self.txt_semilla, self.txt_n, self.btn_generar, self.btn_clear]),
+                ft.Row(
+                    [
+                        self.txt_a,
+                        self.txt_semilla,
+                        self.txt_n,
+                        self.btn_generar,
+                        self.btn_clear,
+                    ]
+                ),
                 self.lbl_error,
-                ft.Row([self.btn_prev, self.lbl_paginacion, self.btn_next], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row(
+                    [self.btn_prev, self.lbl_paginacion, self.btn_next],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
                 ft.ListView(
                     controls=[self.tabla_datos],
                     expand=True,
                     spacing=10,
                     padding=20,
-                )
-            ],)
-    
+                ),
+            ],
+        )
+
     def actualizar_tabla(self):
         self.tabla_datos.rows.clear()
         inicio = self.pagina_actual * self.filas_por_pagina
@@ -73,8 +97,14 @@ class VistaMultiplicadorConstante(ft.Container):
                     ]
                 )
             )
-        total_paginas = (len(self.datos_completos) - 1) // self.filas_por_pagina + 1 if self.datos_completos else 0
-        self.lbl_paginacion.value = f"Página {self.pagina_actual + 1} de {total_paginas}"
+        total_paginas = (
+            (len(self.datos_completos) - 1) // self.filas_por_pagina + 1
+            if self.datos_completos
+            else 0
+        )
+        self.lbl_paginacion.value = (
+            f"Página {self.pagina_actual + 1} de {total_paginas}"
+        )
         self.btn_prev.disabled = self.pagina_actual <= 0
         self.btn_next.disabled = fin >= len(self.datos_completos)
         self.update()
@@ -117,22 +147,24 @@ class VistaMultiplicadorConstante(ft.Container):
             if not n:
                 raise ValueError("El número de iteraciones (n) es requerido")
             if not n.isdigit():
-                raise ValueError(f"El número de iteraciones {n} debe ser un número entero")
+                raise ValueError(
+                    f"El número de iteraciones {n} debe ser un número entero"
+                )
             if int(n) < 0:
                 raise ValueError("El número de iteraciones (n) debe ser positivo")
 
-
-            generador = Multiplicador_constante(a=int(a), semilla=int(semilla), n=int(n))
+            generador = Multiplicador_constante(
+                a=int(a), semilla=int(semilla), n=int(n)
+            )
             self.datos_completos = generador.multiplicadorconstante()
             self.pagina_actual = 0
             self.actualizar_tabla()
-            
+
         except ValueError as ve:
             self.lbl_error.value = str(ve)
         except Exception as ex:
             self.lbl_error.value = f"Error inesperado: {str(ex)}"
         self.update()
-        
 
     def pagina_siguiente(self, e):
         self.pagina_actual += 1
