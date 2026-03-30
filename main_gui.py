@@ -1,4 +1,5 @@
 import flet as ft
+from views.view_chi_cuadrada import VistaChiCuadrada
 from views.view_confirmaciones import VistaConfirmaciones
 from views.view_cuadrado_medio import VistaCuadradosMedios
 from views.view_producto_medio import VistaProductosMedios
@@ -53,6 +54,10 @@ def main(page: ft.Page):
             page.views.append(
                 ft.View(route="/validaciones", controls=[mi_vista_confirmaciones])
             )
+        # En tu def route_change(e=None): de main.py
+        if page.route == "/prueba_chi2":
+            mi_vista_chi2 = VistaChiCuadrada(page)
+            page.views.append(ft.View(route="/prueba_chi2", controls=[mi_vista_chi2]))
         page.update()
 
     # Manejador de volver atrás
