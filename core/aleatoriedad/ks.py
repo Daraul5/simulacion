@@ -5,74 +5,55 @@ from scipy.stats import ksone
 
 class KS_metodo:
     def __init__(self, numeros, alpha):
+        # La prueba KS exige que los datos estén ordenados de menor a mayor
         self.datos = sorted(np.array(numeros))
         self.n = len(self.datos)
-        self.alpha = alpha
-        self.d_plus = []
-        self.d_minus = []
-        self.d_estadistico = 0
-        self.validacion()
+        self.alpha = float(alpha)
 
-    def validacion(self):
-        try:
-            if self.n > 40:
-                raise ValueError("demasiados numeros")
-            self.evaluar()
-            self.imprimir_reporte_ks()
-        except ValueError as e:
-            print(f"\nError: {e}")
+        # Lanzamos el error directamente para que Flet lo atrape en la interfaz
+        if self.n > 40:
+            raise ValueError(
+                "El método KS está limitado a un máximo de 40 números para esta prueba."
+            )
+        if self.n == 0:
+            raise ValueError("No hay datos para evaluar.")
 
-    def evaluar(self):
+    def calcular(self):
+        """
+        Ejecuta la prueba de Kolmogorov-Smirnov y devuelve un diccionario
+        con los estadísticos y la tabla de resultados lista para Flet.
+        """
+        d_plus = []
+        d_minus = []
+
         for i in range(1, self.n + 1):
             ri = self.datos[i - 1]
-            self.d_plus.append((i / self.n) - ri)
-            self.d_minus.append(ri - ((i - 1) / self.n))
+            d_plus.append((i / self.n) - ri)
+            d_minus.append(ri - ((i - 1) / self.n))
 
-        max_d_plus = max(self.d_plus)
-        max_d_minus = max(self.d_minus)
-        self.d_estadistico = max(max_d_plus, max_d_minus)
-        return self.d_estadistico
+        max_d_plus = max(d_plus)
+        max_d_minus = max(d_minus)
+        d_estadistico = max(max_d_plus, max_d_minus)
 
-    def obtener_tabla(self):
-        df = pd.DataFrame(
+        # Obtenemos el valor crítico de la tabla KS
+        valor_critico = ksone.ppf(1 - self.alpha / 2, self.n)
+
+        # Criterio de aceptación: Estadístico D < Valor crítico
+        aprobado = bool(d_estadistico < valor_critico)
+
+        # Preparamos el DataFrame y lo convertimos a diccionarios
+        df_resultados = pd.DataFrame(
             {
                 "i": range(1, self.n + 1),
                 "ri": self.datos,
-                "DMAS": self.d_plus,
-                "DMENOS": self.d_minus,
+                "d_mas": d_plus,
+                "d_menos": d_minus,
             }
         )
-        return df
 
-    def obtener_valor_critico(self):
-        return ksone.ppf(1 - self.alpha / 2, self.n)
-
-    def imprimir_reporte_ks(self):
-        """Muestra el Dataframe y la conclusión de la prueba KS en consola."""
-        tabla = self.obtener_tabla()
-        valor_critico = self.obtener_valor_critico()
-        aprobado = self.d_estadistico < valor_critico
-
-        print("\n" + "=" * 60)
-        print(" REPORTE DE PRUEBA DE KOLMOGOROV-SMIRNOV (K-S)")
-        print("=" * 60)
-
-        # Imprimimos la tabla de pandas con formato limpio
-        print(tabla.to_string(index=False))
-
-        print("-" * 60)
-        print(f"Estadístico D Calculado      : {self.d_estadistico:.4f}")
-        print(f"Valor Crítico (Tabla)        : {valor_critico:.4f}")
-        print(f"Nivel de Significancia (α)   : {self.alpha}")
-        print(f"Tamaño de la Muestra (n)     : {self.n}")
-        print("-" * 60)
-
-        if aprobado:
-            print("CONCLUSIÓN: SE ACEPTA H0.")
-            print(
-                "Los números presentan una distribución uniforme estadísticamente válida."
-            )
-        else:
-            print("CONCLUSIÓN: SE RECHAZA H0.")
-            print("Los números NO presentan una distribución uniforme.")
-        print("=" * 60 + "\n")
+        return {
+            "estadistico_ks": float(d_estadistico),
+            "valor_critico": float(valor_critico),
+            "aprobado": aprobado,
+            "tabla": df_resultados.to_dict(orient="records"),
+        }
