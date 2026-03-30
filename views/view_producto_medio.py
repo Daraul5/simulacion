@@ -3,8 +3,9 @@ from core.metodos.productosmedios import Producto_medio
 
 
 class VistaProductosMedios(ft.Container):
-    def __init__(self):
+    def __init__(self, page: ft.Page):
         super().__init__()
+        self.pagina = page
         self.expand = True
         self.padding = 20
         self.datos_completos = []
@@ -14,16 +15,20 @@ class VistaProductosMedios(ft.Container):
 
     def build_ui(self):
         self.bar = ft.AppBar(
-            title=ft.Text("Simulación"), bgcolor=ft.Colors.BLUE_GREY_900
-        )
-        self.title = ft.Text(
-            value="Generador: Productos Medios", size=32, weight=ft.FontWeight.BOLD
+            title=ft.Text("Generador: Productos Mediosn"),
+            center_title=True,
         )
         self.txt_semilla1 = ft.TextField(label="Semilla 1", width=200)
         self.txt_semilla2 = ft.TextField(label="Semilla 2", width=200)
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=150)
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
         self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
+        self.btn_validar = ft.Button(
+            "Evaluar Aleatoriedad",
+            icon=ft.Icons.FACT_CHECK,
+            on_click=self.ir_a_validaciones,
+            disabled=True,  # Se activará solo al generar datos
+        )
         self.lbl_error = ft.Text(
             color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD
         )
@@ -47,17 +52,9 @@ class VistaProductosMedios(ft.Container):
             ],
             rows=[],
         )
-        self.confirmaciones = ft.Dropdown(
-            options=[
-                ft.dropdown.Option("Aprobar", "Aprobar"),
-                ft.dropdown.Option("Rechazar", "Rechazar"),
-            ],
-            width=150,
-        )
         return ft.Column(
             controls=[
                 self.bar,
-                ft.Row([self.title], alignment=ft.MainAxisAlignment.CENTER),
                 ft.Row(
                     [
                         self.txt_semilla1,
@@ -65,11 +62,11 @@ class VistaProductosMedios(ft.Container):
                         self.txt_n,
                         self.btn_generar,
                         self.btn_clear,
+                        self.btn_validar,
                     ],
                     spacing=10,
                 ),
                 self.lbl_error,
-                self.confirmaciones,
                 ft.Row(
                     [self.btn_prev, self.lbl_paginacion, self.btn_next],
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -117,7 +114,10 @@ class VistaProductosMedios(ft.Container):
     def limpiar_datos(self, e):
         self.tabla_datos.rows.clear()
         self.datos_completos = []
+        self.lbl_error.value = ""
         self.lbl_paginacion.value = "Página 0 de 0"
+        self.lbl_paginacion.value = "Página 0 de 0"
+        self.btn_validar.disabled = True
         self.btn_prev.disabled = True
         self.btn_next.disabled = True
         self.update()
@@ -174,6 +174,9 @@ class VistaProductosMedios(ft.Container):
             self.pagina_actual = 0
             self.actualizar_tabla()
 
+            self.btn_validar.disabled = False  # Activamos el botón de validación
+            self.update()
+
         except ValueError as ex:
             self.lbl_error.value = str(ex)
             self.update()
@@ -188,3 +191,20 @@ class VistaProductosMedios(ft.Container):
     def pagina_anterior(self, e):
         self.pagina_actual -= 1
         self.actualizar_tabla()
+
+    # Añadimos el evento para el botón "Validar"
+    async def ir_a_validaciones(self, e):
+        # 1. Extraemos solo los números Ri
+        lista_ri = [float(fila["ri"]) for fila in self.datos_completos]
+
+        # 2. Guardamos la lista en la sesión de Flet (memoria temporal)
+        self.pagina.session.store.set("lista_ri_actual", lista_ri)
+
+        # 3. Guardamos la ruta de origen para que el botón "Volver" sepa a dónde regresar
+        self.pagina.session.store.set("ruta_origen", "/productos_medios")
+
+        # 4. Navegamos a la vista de confirmaciones (usa tu método de enrutamiento)
+        # Si usas tu método personalizado:
+        await self.pagina.push_route("/validaciones")
+        # O si usas el nativo de Flet:
+        # self.page.go("/validaciones")

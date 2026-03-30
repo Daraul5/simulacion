@@ -18,11 +18,6 @@ class VistaMetodoLineal(ft.Container):
             title=ft.Text("Generador de Números Aleatorios - Método Lineal"),
             center_title=True,
         )
-        self.tittle = ft.Text(
-            "Generador de Números Aleatorios - Método Lineal",
-            size=24,
-            weight=ft.FontWeight.BOLD,
-        )
         self.txt_a = ft.TextField(label="Multiplicador (a)", width=200)
         self.txt_semilla = ft.TextField(label="Semilla (X0)", width=200)
         self.txt_C = ft.TextField(label="Aditivo (c)", width=200)
@@ -62,7 +57,6 @@ class VistaMetodoLineal(ft.Container):
             controls=[
                 # Updated Title
                 self.bar,
-                ft.Row([self.tittle], alignment=ft.MainAxisAlignment.CENTER),
                 ft.Row(
                     [
                         self.txt_a,

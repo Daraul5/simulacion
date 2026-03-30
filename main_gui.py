@@ -1,4 +1,5 @@
 import flet as ft
+from views.view_confirmaciones import VistaConfirmaciones
 from views.view_cuadrado_medio import VistaCuadradosMedios
 from views.view_producto_medio import VistaProductosMedios
 from views.view_metodo_lineal import VistaMetodoLineal
@@ -26,7 +27,7 @@ def main(page: ft.Page):
 
         # Si la ruta coincide, apilamos la vista de productos
         if page.route == "/productos_medios":
-            mi_vista_productos = VistaProductosMedios()
+            mi_vista_productos = VistaProductosMedios(page)
             page.views.append(
                 ft.View(route="/productos_medios", controls=[mi_vista_productos])
             )
@@ -46,6 +47,11 @@ def main(page: ft.Page):
             mi_vista_lineal = VistaMetodoLineal()
             page.views.append(
                 ft.View(route="/algoritmo_lineal", controls=[mi_vista_lineal])
+            )
+        if page.route == "/validaciones":
+            mi_vista_confirmaciones = VistaConfirmaciones(page)
+            page.views.append(
+                ft.View(route="/validaciones", controls=[mi_vista_confirmaciones])
             )
         page.update()
 

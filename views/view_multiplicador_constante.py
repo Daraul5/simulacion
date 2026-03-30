@@ -17,11 +17,6 @@ class VistaMultiplicadorConstante(ft.Container):
             title=ft.Text("Generador de Números Aleatorios - Multiplicador Constante"),
             center_title=True,
         )
-        self.tittle = ft.Text(
-            value="Generador: Multiplicador Constante",
-            size=32,
-            weight=ft.FontWeight.BOLD,
-        )
 
         self.txt_a = ft.TextField(label="Multiplicador (a)", width=200)
         self.txt_semilla = ft.TextField(label="Semilla (X0)", width=200)
@@ -54,7 +49,6 @@ class VistaMultiplicadorConstante(ft.Container):
         return ft.Column(
             controls=[
                 self.bar,
-                ft.Row([self.tittle], alignment=ft.MainAxisAlignment.CENTER),
                 ft.Row(
                     [
                         self.txt_a,
