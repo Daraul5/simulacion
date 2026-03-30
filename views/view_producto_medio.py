@@ -12,6 +12,8 @@ class VistaProductosMedios(ft.Container):
         self.content = self.build_ui()
 
     def build_ui(self):
+        self.bar = ft.AppBar(title=ft.Text("Simulación"), bgcolor=ft.Colors.BLUE_GREY_900)
+        self.title = ft.Text(value="Generador: Productos Medios", size=32, weight=ft.FontWeight.BOLD)
         self.txt_semilla1 = ft.TextField(label="Semilla 1", width=200)
         self.txt_semilla2 = ft.TextField(label="Semilla 2", width=200)
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=150)
@@ -43,7 +45,8 @@ class VistaProductosMedios(ft.Container):
         )
         return ft.Column(
             controls=[
-                ft.Text(value="Generador: Productos Medios", size=32, weight=ft.FontWeight.BOLD),
+                self.bar,
+                ft.Row([self.title], alignment=ft.MainAxisAlignment.CENTER),
                 ft.Row([self.txt_semilla1, self.txt_semilla2, self.txt_n, self.btn_generar, self.btn_clear], spacing=10),
                 self.lbl_error, 
                 self.confirmaciones,

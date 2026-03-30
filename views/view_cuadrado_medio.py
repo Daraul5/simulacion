@@ -12,6 +12,8 @@ class VistaCuadradosMedios(ft.Container):
         self.content = self.build_ui()
 
     def build_ui(self):
+        self.bar = ft.AppBar(title=ft.Text("Generador de Números Aleatorios - Cuadrados Medios"), center_title=True)
+        self.tittle = ft.Text("Generador de Números Aleatorios - Cuadrados Medios", size=24, weight=ft.FontWeight.BOLD)
         self.txt_semilla = ft.TextField(label="Semilla", width=200)
         self.txt_n = ft.TextField(label="Iteraciones (n)", width=150)
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
@@ -34,11 +36,15 @@ class VistaCuadradosMedios(ft.Container):
         )
         return ft.Column(
             controls=[
-                ft.Text("Generador: Cuadrados Medios", size=32, weight=ft.FontWeight.BOLD),
+                self.bar,
+                ft.Row([self.tittle], alignment=ft.MainAxisAlignment.CENTER),
                 ft.Row([self.txt_semilla, self.txt_n, self.btn_generar]),
                 self.lbl_error,
                 ft.Row([self.btn_prev, self.lbl_paginacion, self.btn_next], alignment=ft.MainAxisAlignment.CENTER),
-                ft.ListView([self.tabla_datos], expand=True, padding=20)
+                ft.ListView(
+                    controls=[self.tabla_datos], 
+                    expand=True, 
+                    padding=20)
             ],
             expand=True
         )
