@@ -1,5 +1,5 @@
 import flet as ft
-from core.cuadradosmedios import Cuadrado_medio
+from core.metodos.cuadradosmedios import Cuadrado_medio
 
 class VistaCuadradosMedios(ft.Container):
     def __init__(self):

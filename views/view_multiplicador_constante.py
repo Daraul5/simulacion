@@ -1,5 +1,5 @@
 import flet as ft
-from core.multplicadorconstante import Multiplicador_constante
+from core.metodos.multplicadorconstante import Multiplicador_constante
 
 class VistaMultiplicadorConstante(ft.Container):
     def __init__(self):

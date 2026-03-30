@@ -1,5 +1,5 @@
 import flet as ft
-from core.productosmedios import Producto_medio
+from core.metodos.productosmedios import Producto_medio
 
 class VistaProductosMedios(ft.Container):
     def __init__(self):

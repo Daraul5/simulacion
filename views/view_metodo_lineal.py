@@ -1,5 +1,5 @@
 import flet as ft
-from core.metodolineal import Metodo_lineal
+from core.metodos.metodolineal import Metodo_lineal
 import math
 class VistaMetodoLineal(ft.Container):
     def __init__(self):
