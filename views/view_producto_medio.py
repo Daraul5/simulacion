@@ -34,12 +34,19 @@ class VistaProductosMedios(ft.Container):
             ],
             rows=[]
         )
-
+        self.confirmaciones = ft.Dropdown(
+            options=[
+                ft.dropdown.Option("Aprobar", "Aprobar"),
+                ft.dropdown.Option("Rechazar", "Rechazar")
+            ],
+            width=150
+        )
         return ft.Column(
             controls=[
                 ft.Text(value="Generador: Productos Medios", size=32, weight=ft.FontWeight.BOLD),
-                ft.Row([self.txt_semilla1, self.txt_semilla2, self.txt_n, self.btn_generar]),
-                self.lbl_error,
+                ft.Row([self.txt_semilla1, self.txt_semilla2, self.txt_n, self.btn_generar, self.btn_clear], spacing=10),
+                self.lbl_error, 
+                self.confirmaciones,
                 ft.Row([self.btn_prev, self.lbl_paginacion, self.btn_next], alignment=ft.MainAxisAlignment.CENTER),
                 ft.ListView(
                     controls=[self.tabla_datos],
@@ -74,7 +81,7 @@ class VistaProductosMedios(ft.Container):
         self.btn_prev.disabled = self.pagina_actual <= 0
         self.btn_next.disabled = fin >= len(self.datos_completos)
         self.update()
-        
+
     def limpiar_datos(self, e):
         self.tabla_datos.rows.clear()
         self.datos_completos = []
