@@ -6,6 +6,7 @@ from views.view_metodo_lineal import VistaMetodoLineal
 from views.view_multiplicador_constante import VistaMultiplicadorConstante
 from views.main import VistaMenu
 from views.view_chi_cuadrada import VistaChiCuadrada
+from views.view_kS import VistaKS
 
 # ... importar las demás pruebas ...
 
@@ -70,12 +71,12 @@ def main(page: ft.Page):
             page.views.append(
                 ft.View(route="/prueba_chi2", controls=[vista_chi2_fresca])
             )
-
-        # EJEMPLO PARA CUANDO HAGAS KS:
-        # elif page.route == "/prueba_ks":
-        #     page.views.append(ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]]))
-        #     vista_ks_fresca = VistaKS(page)
-        #     page.views.append(ft.View(route="/prueba_ks", controls=[vista_ks_fresca]))
+        elif page.route == "/prueba_ks":
+            page.views.append(
+                ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
+            )
+            vista_ks_fresca = VistaKS(page)
+            page.views.append(ft.View(route="/prueba_ks", controls=[vista_ks_fresca]))
 
         page.update()
 
