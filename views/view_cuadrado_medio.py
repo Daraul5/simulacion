@@ -180,4 +180,4 @@ class VistaCuadradosMedios(ft.Container):
         lista_ri = [float(fila["ri"]) for fila in self.datos_completos]
         self.pagina.session.store.set("lista_ri_actual", lista_ri)
         self.pagina.session.store.set("ruta_origen", "/cuadrados_medios")
-        await self.pagina.push_route("/validaciones")
+        await self.pagina.push_route("/confirmaciones")

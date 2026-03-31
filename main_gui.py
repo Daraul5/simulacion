@@ -5,17 +5,16 @@ from views.view_producto_medio import VistaProductosMedios
 from views.view_metodo_lineal import VistaMetodoLineal
 from views.view_multiplicador_constante import VistaMultiplicadorConstante
 from views.main import VistaMenu
-
-# IMPORTANTE: Asegúrate de importar tus vistas de pruebas
 from views.view_chi_cuadrada import VistaChiCuadrada
+
+# ... importar las demás pruebas ...
 
 
 def main(page: ft.Page):
     page.title = "Mis Generadores"
-
-    # EL TRUCO: Instanciar todas las vistas UNA SOLA VEZ aquí afuera.
-    # Esto evita que se borren tus números generados (las tablas y los inputs)
-    # cuando cambies de pantalla y regreses.
+    page.theme_mode = ft.ThemeMode.LIGHT
+    # 1. DICCIONARIO PERSISTENTE: Solo metemos los menús y los generadores.
+    # Quitamos VistaChiCuadrada de aquí.
     vistas = {
         "/": VistaMenu(page),
         "/productos_medios": VistaProductosMedios(page),
@@ -23,20 +22,16 @@ def main(page: ft.Page):
         "/multiplicador_constante": VistaMultiplicadorConstante(),
         "/algoritmo_lineal": VistaMetodoLineal(),
         "/confirmaciones": VistaConfirmaciones(page),
-        "/prueba_chi2": VistaChiCuadrada(page),
-        # Aquí irán las otras 5 pruebas...
     }
 
     def route_change(e=None):
         page.views.clear()
 
-        # NIVEL 0: Siempre apilamos el menú principal en el fondo
+        # Apilamos el menú principal
         page.views.append(ft.View(route="/", controls=[vistas["/"]]))
-
-        # Recuperamos de qué generador venimos (nuestra migaja de pan)
         ruta_origen = page.session.store.get("ruta_origen")
 
-        # NIVEL 1: Vistas Generadoras
+        # Apilamos el generador si estamos en uno
         if page.route in [
             "/productos_medios",
             "/cuadrados_medios",
@@ -45,41 +40,46 @@ def main(page: ft.Page):
         ]:
             page.views.append(ft.View(route=page.route, controls=[vistas[page.route]]))
 
+        # Apilamos el generador debajo si estamos en validaciones o en una prueba
         elif page.route == "/confirmaciones" or page.route.startswith("/prueba_"):
-            # Si avanzamos a validaciones, dejamos el generador apilado DEBAJO
             if ruta_origen and ruta_origen in vistas:
                 page.views.append(
                     ft.View(route=ruta_origen, controls=[vistas[ruta_origen]])
                 )
 
-        # NIVEL 2: Menú de Confirmaciones
+        # Lógica para Confirmaciones
         if page.route == "/confirmaciones":
-            # Actualizamos el texto para que lea la memoria más reciente
             lista_actual = page.session.store.get("lista_ri_actual") or []
             vistas["/confirmaciones"].lbl_info.value = (
                 f"Se evaluarán {len(lista_actual)} números generados."
             )
-
             page.views.append(
                 ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
             )
 
-        elif page.route.startswith("/prueba_"):
-            # Si estamos en una prueba, dejamos las validaciones apiladas DEBAJO
+        # LÓGICA PARA LAS PRUEBAS (VISTAS DESECHABLES)
+        elif page.route == "/prueba_chi2":
+            # 1. Apilamos el menú de confirmaciones abajo para poder darle a "Volver"
             page.views.append(
                 ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
             )
 
-            # NIVEL 3: La Prueba Específica (Chi-Cuadrada, KS, etc.)
-            if page.route in vistas:
-                page.views.append(
-                    ft.View(route=page.route, controls=[vistas[page.route]])
-                )
+            # 2. INSTANCIAMOS LA PRUEBA EN ESTE MOMENTO EXACTO
+            # Esto garantiza que la pantalla nazca totalmente en blanco cada vez que entras
+            vista_chi2_fresca = VistaChiCuadrada(page)
+            page.views.append(
+                ft.View(route="/prueba_chi2", controls=[vista_chi2_fresca])
+            )
+
+        # EJEMPLO PARA CUANDO HAGAS KS:
+        # elif page.route == "/prueba_ks":
+        #     page.views.append(ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]]))
+        #     vista_ks_fresca = VistaKS(page)
+        #     page.views.append(ft.View(route="/prueba_ks", controls=[vista_ks_fresca]))
 
         page.update()
 
     async def view_pop(e):
-        # Cuando le dan a la flecha atrás, Flet saca la última vista y regresa a la que quedó arriba
         if len(page.views) > 1:
             page.views.pop()
             top_view = page.views[-1]
@@ -87,7 +87,6 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-
     route_change()
 
 
