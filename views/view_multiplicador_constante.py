@@ -182,5 +182,5 @@ class VistaMultiplicadorConstante(ft.Container):
     async def ir_a_validaciones(self, e):
         lista_ri = [float(fila["ri"]) for fila in self.datos_completos]
         self.pagina.session.store.set("lista_ri_actual", lista_ri)
-        self.pagina.session.store.set("ruta_origen", "/algoritmo_lineal")
+        self.pagina.session.store.set("ruta_origen", "/multiplicador_constante")
         await self.pagina.push_route("/confirmaciones")
