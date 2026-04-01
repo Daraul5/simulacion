@@ -3,8 +3,9 @@ from core.metodos.multplicadorconstante import Multiplicador_constante
 
 
 class VistaMultiplicadorConstante(ft.Container):
-    def __init__(self):
+    def __init__(self, page: ft.Page):
         super().__init__()
+        self.pagina = page
         self.expand = True
         self.padding = 20
         self.datos_completos = []
@@ -25,7 +26,12 @@ class VistaMultiplicadorConstante(ft.Container):
         self.btn_generar = ft.Button("Generar", on_click=self.procesar_datos)
         self.btn_clear = ft.Button("Limpiar", on_click=self.limpiar_datos)
         self.lbl_error = ft.Text(color=ft.Colors.ERROR, weight=ft.FontWeight.BOLD)
-
+        self.btn_validar = ft.Button(
+            "Evaluar Aleatoriedad",
+            icon=ft.Icons.FACT_CHECK,
+            on_click=self.ir_a_validaciones,
+            disabled=True,  # Se activará solo al generar datos
+        )
         self.btn_prev = ft.IconButton(
             ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True
         )
@@ -56,6 +62,7 @@ class VistaMultiplicadorConstante(ft.Container):
                         self.txt_n,
                         self.btn_generar,
                         self.btn_clear,
+                        self.btn_validar,
                     ]
                 ),
                 self.lbl_error,
@@ -107,6 +114,9 @@ class VistaMultiplicadorConstante(ft.Container):
         self.txt_a.value = ""
         self.txt_semilla.value = ""
         self.txt_n.value = ""
+        self.btn_next.disabled = True
+        self.btn_prev.disabled = True
+        self.btn_validar.disabled = True
         self.lbl_error.value = ""
         self.tabla_datos.rows.clear()
         self.datos_completos = []
@@ -153,7 +163,8 @@ class VistaMultiplicadorConstante(ft.Container):
             self.datos_completos = generador.multiplicadorconstante()
             self.pagina_actual = 0
             self.actualizar_tabla()
-
+            self.btn_validar.disabled = False  # Activamos el botón de validación
+            self.update()
         except ValueError as ve:
             self.lbl_error.value = str(ve)
         except Exception as ex:
@@ -167,3 +178,9 @@ class VistaMultiplicadorConstante(ft.Container):
     def pagina_anterior(self, e):
         self.pagina_actual -= 1
         self.actualizar_tabla()
+
+    async def ir_a_validaciones(self, e):
+        lista_ri = [float(fila["ri"]) for fila in self.datos_completos]
+        self.pagina.session.store.set("lista_ri_actual", lista_ri)
+        self.pagina.session.store.set("ruta_origen", "/algoritmo_lineal")
+        await self.pagina.push_route("/confirmaciones")

@@ -3,6 +3,8 @@ from views.view_arribaabajo import VistaArribaAbajo
 from views.view_arribaabajormedia import VistaArribaAbajoMedia
 from views.view_confirmaciones import VistaConfirmaciones
 from views.view_cuadrado_medio import VistaCuadradosMedios
+from views.view_poker import VistaPoker
+from views.vista_huecos import VistaHuecos
 from views.view_producto_medio import VistaProductosMedios
 from views.view_metodo_lineal import VistaMetodoLineal
 from views.view_multiplicador_constante import VistaMultiplicadorConstante
@@ -23,8 +25,8 @@ def main(page: ft.Page):
         "/": VistaMenu(page),
         "/productos_medios": VistaProductosMedios(page),
         "/cuadrados_medios": VistaCuadradosMedios(page),
-        "/multiplicador_constante": VistaMultiplicadorConstante(),
-        "/algoritmo_lineal": VistaMetodoLineal(),
+        "/multiplicador_constante": VistaMultiplicadorConstante(page),
+        "/algoritmo_lineal": VistaMetodoLineal(page),
         "/confirmaciones": VistaConfirmaciones(page),
     }
 
@@ -102,6 +104,23 @@ def main(page: ft.Page):
                     controls=[vista_arribaabajomedia_fresca],
                 )
             )
+        elif page.route == "/prueba_poker":
+            page.views.append(
+                ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
+            )
+            vista_poker_fresca = VistaPoker(page)
+            page.views.append(
+                ft.View(route="/prueba_poker", controls=[vista_poker_fresca])
+            )
+        elif page.route == "/prueba_huecos":
+            page.views.append(
+                ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
+            )
+            vista_huecos_fresca = VistaHuecos(page)
+            page.views.append(
+                ft.View(route="/prueba_huecos", controls=[vista_huecos_fresca])
+            )
+
         page.update()
 
     async def view_pop(e):

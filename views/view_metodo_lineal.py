@@ -4,8 +4,9 @@ import math
 
 
 class VistaMetodoLineal(ft.Container):
-    def __init__(self):
+    def __init__(self, page: ft.Page):
         super().__init__()
+        self.pagina = page
         self.expand = True
         self.padding = 20
         self.datos_completos = []
@@ -31,7 +32,12 @@ class VistaMetodoLineal(ft.Container):
         self.lbl_error = ft.Text(
             color=ft.Colors.ERROR, size=14, weight=ft.FontWeight.BOLD
         )
-
+        self.btn_validar = ft.Button(
+            "Evaluar Aleatoriedad",
+            icon=ft.Icons.FACT_CHECK,
+            on_click=self.ir_a_validaciones,
+            disabled=True,  # Se activará solo al generar datos
+        )
         self.btn_prev = ft.IconButton(
             ft.Icons.ARROW_BACK, on_click=self.pagina_anterior, disabled=True
         )
@@ -66,6 +72,7 @@ class VistaMetodoLineal(ft.Container):
                         self.txt_n,
                         self.btn_generar,
                         self.btn_clear,
+                        self.btn_validar,
                     ]
                 ),
                 self.lbl_error,
@@ -88,6 +95,9 @@ class VistaMetodoLineal(ft.Container):
         self.datos_completos = []
         self.lbl_paginacion.value = "Página 0 de 0"
         self.txt_a.value = ""
+        self.btn_next.disabled = True
+        self.btn_prev.disabled = True
+        self.btn_validar.disabled = True
         self.txt_semilla.value = ""
         self.txt_C.value = ""
         self.txt_modulo.value = ""
@@ -244,7 +254,8 @@ class VistaMetodoLineal(ft.Container):
             # Reset de página y renderizado
             self.pagina_actual = 0
             self.actualizar_tabla()
-
+            self.btn_validar.disabled = False  # Activamos el botón de validación
+            self.update()
         except ValueError as ex:
             self.lbl_error.value = str(ex)
             self.update()
@@ -259,3 +270,9 @@ class VistaMetodoLineal(ft.Container):
     def pagina_anterior(self, e):
         self.pagina_actual -= 1
         self.actualizar_tabla()
+
+    async def ir_a_validaciones(self, e):
+        lista_ri = [float(fila["ri"]) for fila in self.datos_completos]
+        self.pagina.session.store.set("lista_ri_actual", lista_ri)
+        self.pagina.session.store.set("ruta_origen", "/algoritmo_lineal")
+        await self.pagina.push_route("/confirmaciones")
