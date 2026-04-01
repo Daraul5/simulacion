@@ -1,5 +1,6 @@
 import flet as ft
 from views.view_arribaabajo import VistaArribaAbajo
+from views.view_arribaabajormedia import VistaArribaAbajoMedia
 from views.view_confirmaciones import VistaConfirmaciones
 from views.view_cuadrado_medio import VistaCuadradosMedios
 from views.view_producto_medio import VistaProductosMedios
@@ -88,6 +89,17 @@ def main(page: ft.Page):
             page.views.append(
                 ft.View(
                     route="/prueba_arriba_abajo", controls=[vista_arribaabajo_fresca]
+                )
+            )
+        elif page.route == "/prueba_arriba_abajo_media":
+            page.views.append(
+                ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
+            )
+            vista_arribaabajomedia_fresca = VistaArribaAbajoMedia(page)
+            page.views.append(
+                ft.View(
+                    route="/prueba_arriba_abajo_media",
+                    controls=[vista_arribaabajomedia_fresca],
                 )
             )
         page.update()
