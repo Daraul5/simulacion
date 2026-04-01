@@ -1,4 +1,5 @@
 import flet as ft
+from views.view_arribaabajo import VistaArribaAbajo
 from views.view_confirmaciones import VistaConfirmaciones
 from views.view_cuadrado_medio import VistaCuadradosMedios
 from views.view_producto_medio import VistaProductosMedios
@@ -12,8 +13,9 @@ from views.view_kS import VistaKS
 
 
 def main(page: ft.Page):
+    page.adaptive = True
     page.title = "Mis Generadores"
-    page.theme_mode = ft.ThemeMode.LIGHT
+    page.theme_mode = ft.ThemeMode.DARK
     # 1. DICCIONARIO PERSISTENTE: Solo metemos los menús y los generadores.
     # Quitamos VistaChiCuadrada de aquí.
     vistas = {
@@ -78,6 +80,16 @@ def main(page: ft.Page):
             vista_ks_fresca = VistaKS(page)
             page.views.append(ft.View(route="/prueba_ks", controls=[vista_ks_fresca]))
 
+        elif page.route == "/prueba_arriba_abajo":
+            page.views.append(
+                ft.View(route="/confirmaciones", controls=[vistas["/confirmaciones"]])
+            )
+            vista_arribaabajo_fresca = VistaArribaAbajo(page)
+            page.views.append(
+                ft.View(
+                    route="/prueba_arriba_abajo", controls=[vista_arribaabajo_fresca]
+                )
+            )
         page.update()
 
     async def view_pop(e):
