@@ -114,6 +114,7 @@ class VistaMultiplicadorConstante(ft.Container):
         self.txt_a.value = ""
         self.txt_semilla.value = ""
         self.txt_n.value = ""
+        self.lbl_error.value = ""
         self.btn_next.disabled = True
         self.btn_prev.disabled = True
         self.btn_validar.disabled = True

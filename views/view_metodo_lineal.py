@@ -95,6 +95,7 @@ class VistaMetodoLineal(ft.Container):
         self.datos_completos = []
         self.lbl_paginacion.value = "Página 0 de 0"
         self.txt_a.value = ""
+        self.lbl_error.value = ""
         self.btn_next.disabled = True
         self.btn_prev.disabled = True
         self.btn_validar.disabled = True
